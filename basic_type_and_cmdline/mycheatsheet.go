@@ -153,10 +153,10 @@ func main() {
 		{"int", &value, "value", 0, "set numeric val for debug message"},
 		//{"uint", &value, "value", 0, "raise error in initializeFlag"},
 	}
-	ret, errcode := initializeFlag(flags)
+	ret, err := initializeFlag(flags)
 	if !ret {
 		print("Error: invalid typename found\n")
-		os.Exit(errcode)
+		os.Exit(err)
 	}
 	if is_debug {
 		print("\nThis is a debug message outputted to stderr\n")
