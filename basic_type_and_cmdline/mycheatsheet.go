@@ -47,6 +47,7 @@ func initializeFlag(flags [][]interface{}) (ret bool, err int) {
 		}
 	}
 	flag.Parse()
+	return
 }
 
 func main() {
