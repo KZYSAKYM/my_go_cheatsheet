@@ -15,8 +15,9 @@ import (
 
 /*
  * @flags: type, ptr, opt, default, usage
+ * We can return mutiple value like python
  */
-func initializeFlag(flags [][]interface{}) bool {
+func initializeFlag(flags [][]interface{}) (bool, int) {
 	// set usage
 	flag.Usage = func() {
 		print("usage: this is my usage message\n")
@@ -39,11 +40,11 @@ func initializeFlag(flags [][]interface{}) bool {
 			defval := flags[i][3].(int)
 			flag.IntVar(ptr, opt, defval, usage)
 		} else {
-			return false
+			return false, -1
 		}
 	}
 	flag.Parse()
-	return true
+	return true, 0
 }
 
 func main() {
@@ -152,9 +153,10 @@ func main() {
 		{"int", &value, "value", 0, "set numeric val for debug message"},
 		//{"uint", &value, "value", 0, "raise error in initializeFlag"},
 	}
-	if !initializeFlag(flags) {
+	ret, errcode := initializeFlag(flags)
+	if !ret {
 		print("Error: invalid typename found\n")
-		os.Exit(-1)
+		os.Exit(errcode)
 	}
 	if is_debug {
 		print("\nThis is a debug message outputted to stderr\n")
