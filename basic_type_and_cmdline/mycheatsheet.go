@@ -7,7 +7,7 @@ package main
  * We can access attributes of them like <package>.<attribute>.
  */
 import (
-	"flag" //line argparse
+	"flag" //like argparse in python
 	"fmt"
 	"math"
 	"os"
