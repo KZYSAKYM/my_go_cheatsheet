@@ -17,7 +17,9 @@ import (
  * @flags: type, ptr, opt, default, usage
  * We can return mutiple value like python
  */
-func initializeFlag(flags [][]interface{}) (bool, int) {
+func initializeFlag(flags [][]interface{}) (ret bool, err int) {
+	ret = true
+	err = 0
 	// set usage
 	flag.Usage = func() {
 		print("usage: this is my usage message\n")
@@ -40,11 +42,11 @@ func initializeFlag(flags [][]interface{}) (bool, int) {
 			defval := flags[i][3].(int)
 			flag.IntVar(ptr, opt, defval, usage)
 		} else {
-			return false, -1
+			ret = false
+			err = -1
 		}
 	}
 	flag.Parse()
-	return true, 0
 }
 
 func main() {
