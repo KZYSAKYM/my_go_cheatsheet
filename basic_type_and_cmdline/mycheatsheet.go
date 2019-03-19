@@ -9,13 +9,32 @@ package main
 import (
 	"flag" //like argparse in python
 	"fmt"
-	"math"
-	"os"
+	m "math" // placing name before package == import some as s
+	. "os"   // placing . before package == from some import *
+)
+
+/* go has no enum
+ * but, we can use const like it.
+ * we need to set some value to const var.
+ * And, const vars in the same block have same val.
+ * Using iota, we can set different vals into them.
+ * iota's value will be added when by calling it.
+ */
+
+const (
+	BOOL_OPT   = 1 + iota //1 + iota = 1
+	STRING_OPT            //1 + iota = 2
+	INT_OPT               //1 + iota = 3
+)
+
+const (
+	UINT_OPT = 0
 )
 
 /*
  * @flags: type, ptr, opt, default, usage
  * We can return mutiple value like python
+ * and use reserved return variables like nim.
  */
 func initializeFlag(flags [][]interface{}) (ret bool, err int) {
 	ret = true
@@ -26,24 +45,29 @@ func initializeFlag(flags [][]interface{}) (ret bool, err int) {
 		flag.PrintDefaults()
 	}
 	for i := 0; i < len(flags); i++ {
-		typename := flags[i][0].(string)
+		typename := flags[i][0].(int)
 		opt := flags[i][2].(string)
 		usage := flags[i][4].(string)
-		if typename == "bool" {
+		switch typename {
+		case BOOL_OPT:
 			ptr := flags[i][1].(*bool)
 			defval := flags[i][3].(bool)
 			flag.BoolVar(ptr, opt, defval, usage)
-		} else if typename == "string" {
+			break
+		case STRING_OPT:
 			ptr := flags[i][1].(*string)
 			defval := flags[i][3].(string)
 			flag.StringVar(ptr, opt, defval, usage)
-		} else if typename == "int" {
+			break
+		case INT_OPT:
 			ptr := flags[i][1].(*int)
 			defval := flags[i][3].(int)
 			flag.IntVar(ptr, opt, defval, usage)
-		} else {
+			break
+		default:
 			ret = false
 			err = -1
+			break
 		}
 	}
 	flag.Parse()
@@ -114,34 +138,38 @@ func main() {
 		}
 	)
 
+	// We can use range reserved word in for loop.
+	// It's similar to enumerate in python.
 	fmt.Printf("var name :\t\t\t\ttype name :\t\t\t\tvalue\n")
-	for i := 0; array[i][0] != "end"; i++ {
-		fmt.Printf("%s :\t\t\t\t%s :\t\t\t\t%s\n", array[i][0], array[i][1], array[i][2])
+	for _, v := range array {
+		fmt.Printf("%s :\t\t\t\t%s :\t\t\t\t%s\n", v[0], v[1], v[2])
 	}
+	// Ofcource, we can use old school styled for loop
 	// the scope of i is in for block.
 	for i := 0; i < len(interface_t); i++ {
-		fmt.Printf("interface_t :\t\t\t\tinterface{} :\t\t\t\t%v\n", interface_t[i])
+		fmt.Printf("interface_t :\t\t\t\tinterface{} :\t\t\t\t%v\n",
+			interface_t[i])
 	}
 
-	fmt.Printf("int8: \n\tmax: %d \n\tmin: %d\n", math.MaxInt8, math.MinInt8)
+	fmt.Printf("int8: \n\tmax: %d \n\tmin: %d\n", m.MaxInt8, m.MinInt8)
 
-	fmt.Printf("int16: \n\tmax: %d \n\tmin: %d\n", math.MaxInt16, math.MinInt16)
+	fmt.Printf("int16: \n\tmax: %d \n\tmin: %d\n", m.MaxInt16, m.MinInt16)
 
-	fmt.Printf("int32: \n\tmax: %d \n\tmin: %d\n", math.MaxInt32, math.MinInt32)
+	fmt.Printf("int32: \n\tmax: %d \n\tmin: %d\n", m.MaxInt32, m.MinInt32)
 
-	fmt.Printf("int64: \n\tmax: %d \n\tmin: %d\n", math.MaxInt64, math.MinInt64)
+	fmt.Printf("int64: \n\tmax: %d \n\tmin: %d\n", m.MaxInt64, m.MinInt64)
 
-	fmt.Printf("uint8: \n\tmax: %d \n\tmin: %d\n", math.MaxUint8, 0)
+	fmt.Printf("uint8: \n\tmax: %d \n\tmin: %d\n", m.MaxUint8, 0)
 
-	fmt.Printf("uint16: \n\tmax: %d \n\tmin: %d\n", math.MaxUint16, 0)
+	fmt.Printf("uint16: \n\tmax: %d \n\tmin: %d\n", m.MaxUint16, 0)
 
-	fmt.Printf("uint32: \n\tmax: %d \n\tmin: %d\n", math.MaxUint32, 0)
+	fmt.Printf("uint32: \n\tmax: %d \n\tmin: %d\n", m.MaxUint32, 0)
 
-	fmt.Printf("uint64: \n\tmax: %d \n\tmin: %d\n", uint64(math.MaxUint64), 0)
+	fmt.Printf("uint64: \n\tmax: %d \n\tmin: %d\n", uint64(m.MaxUint64), 0)
 
-	fmt.Printf("float32: \n\tmax: %f\n\tmin: %f\n", math.MaxFloat32, -math.MaxFloat32)
+	fmt.Printf("float32: \n\tmax: %f\n\tmin: %f\n", m.MaxFloat32, -m.MaxFloat32)
 
-	fmt.Printf("float64: \n\tmax: %f\n\tmin: %f\n", math.MaxFloat64, -math.MaxFloat64)
+	fmt.Printf("float64: \n\tmax: %f\n\tmin: %f\n", m.MaxFloat64, -m.MaxFloat64)
 
 	// parse cmdline opts
 	// prepare cmdline opt vars
@@ -151,17 +179,18 @@ func main() {
 		value    int
 	)
 	flags := [][]interface{}{
-		{"bool", &is_debug, "debug", false, "enable debug message"},
-		{"string", &message, "message", "", "append your message into debug message"},
-		{"int", &value, "value", 0, "set numeric val for debug message"},
-		//{"uint", &value, "value", 0, "raise error in initializeFlag"},
+		{BOOL_OPT, &is_debug, "debug", false, "enable debug message"},
+		{STRING_OPT, &message, "message", "", "append your message into debug message"},
+		{INT_OPT, &value, "value", 0, "set numeric val for debug message"},
+		//{UINT_OPT, &value, "value", 0, "raise error in initializeFlag"},
 	}
 	ret, err := initializeFlag(flags)
 	if !ret {
 		print("Error: invalid typename found\n")
-		os.Exit(err)
+		Exit(err)
 	}
 	if is_debug {
+		print(UINT_OPT)
 		print("\nThis is a debug message outputted to stderr\n")
 		print("\tYour message : ", message)
 		print("\tYour value   : ", value)
