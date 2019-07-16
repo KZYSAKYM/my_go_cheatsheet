@@ -89,15 +89,15 @@ func main() {
 	flags := [][]interface{}{
 		{
 			BOOL_OPT, &is_verbose, "-verbose",
-			false, "show verbose info message"
+			false, "show verbose info message",
 		},
 		{
 			BOOL_OPT, &is_help, "-help", false,
-			"show usage"
+			"show usage",
 		},
 		{
 			BOOL_OPT, &is_version, "-version", false,
-			"show version"
+			"show version",
 		},
 	}
 	ret, err := initializeFlag(flags)
@@ -108,4 +108,6 @@ func main() {
 		show_version()
 		os.Exit(-1)
 	}
+	fmt.Println("ret:", ret)
+	fmt.Println("err:", err)
 }
